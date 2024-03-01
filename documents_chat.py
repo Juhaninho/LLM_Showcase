@@ -4,6 +4,11 @@ from langchain_community.vectorstores import Chroma
 from pydantic.v1 import ValidationError
 import os
 
+# Update SQLite3
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
