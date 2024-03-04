@@ -5,6 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
+from openai import RateLimitError
 from pydantic.v1 import ValidationError
 import os
 
@@ -56,7 +57,11 @@ def ask_and_get_answer(vector_store, q, k=3):
 
     chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
 
-    answer = chain.invoke(q)
+    try:
+        answer = chain.invoke(q)
+    except RateLimitError as e:
+        return 'OpenAI Budget aufgebraucht: {}'.format(str(e))
+
     return answer['result']
 
 
